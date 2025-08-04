@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso - Nosso Casamento</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: url('fundo.jpg') center/cover no-repeat fixed;
+        }
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .login-title {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .login-input:focus {
+            outline: none;
+            border-color: #81c7d4;
+        }
+        .login-btn {
+            background: #81c7d4;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .login-btn:hover {
+            background: #6ba3b0;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <img src="foto de capa.jpg" alt="Convite de Casamento" style="max-width: 200px; width: 100%; margin-bottom: 20px; border-radius: 10px;">
+            <h2 class="login-title">Acesso à Galeria</h2>
+            <form onsubmit="checkPassword(event)">
+                <input type="password" id="password" class="login-input" placeholder="Digite a senha" required>
+                <button type="submit" class="login-btn">Entrar</button>
+            </form>
+            <div id="errorMessage" class="error-message">Senha incorreta. Tente novamente.</div>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            const correctPassword = 'casamento2024'; // Altere aqui a senha
+            
+            if (password === correctPassword) {
+                // Salvar login no localStorage
+                localStorage.setItem('authenticated', 'true');
+                // Redirecionar para a galeria
+                window.location.href = 'gallery.html';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // Verificar se já está logado
+        if (localStorage.getItem('authenticated') === 'true') {
+            window.location.href = 'gallery.html';
+        }
+    </script>
+</body>
+</html>

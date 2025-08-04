@@ -5,12 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nosso Casamento</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+    </style>
 </head>
 <body>
-    <script>
-        // Redirecionar para login
-        window.location.href = 'login.html';
-    </script>
+    <button class="logout-btn" onclick="logout()">Sair</button>
+    
     <div class="container">
         <img src="foto de capa.jpg" alt="Convite de Casamento" class="wedding-cover">
         
@@ -56,5 +72,16 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.24.min.js"></script>
     <script src="config.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Verificar autenticação
+        if (localStorage.getItem('authenticated') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('authenticated');
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>
