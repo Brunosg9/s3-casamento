@@ -152,11 +152,76 @@ function loadPhotos() {
                     var imgSrc = 'https://' + CONFIG.BUCKET_NAME + '.s3.' + CONFIG.REGION + '.amazonaws.com/' + obj.Key;
                     window.allImages.push(imgSrc);
                     
+                    // Container para imagem + botão
+                    var container = document.createElement('div');
+                    container.style.position = 'relative';
+                    container.style.display = 'inline-block';
+                    
                     var img = document.createElement('img');
                     img.src = imgSrc;
                     img.style.cursor = 'pointer';
                     img.onclick = function() { openModal(imgSrc, index); };
-                    gallery.appendChild(img);
+                    
+                    // Detectar mobile
+                    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    
+                    // Botão de download
+                    var downloadBtn = document.createElement('button');
+                    downloadBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16L7 11L8.4 9.6L11 12.2V4H13V12.2L15.6 9.6L17 11L12 16Z" fill="currentColor"/>
+                            <path d="M5 20V18H19V20H5Z" fill="currentColor"/>
+                        </svg>
+                    `;
+                    
+                    downloadBtn.style.cssText = `
+                        position: absolute;
+                        top: 8px;
+                        right: 8px;
+                        background: rgba(0,0,0,0.8);
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 32px;
+                        height: 32px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: ${isMobile ? '1' : '0'};
+                        transition: all 0.3s ease;
+                        z-index: 10;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    `;
+                    
+                    // Hover effects apenas para desktop
+                    if (!isMobile) {
+                        container.onmouseenter = function() {
+                            downloadBtn.style.opacity = '1';
+                        };
+                        container.onmouseleave = function() {
+                            downloadBtn.style.opacity = '0';
+                        };
+                    }
+                    
+                    downloadBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        downloadPhoto(imgSrc, index);
+                    };
+                    
+                    downloadBtn.onmouseenter = function() {
+                        this.style.background = 'rgba(0,0,0,0.9)';
+                        this.style.transform = 'scale(1.1)';
+                    };
+                    
+                    downloadBtn.onmouseleave = function() {
+                        this.style.background = 'rgba(0,0,0,0.8)';
+                        this.style.transform = 'scale(1)';
+                    };
+                    
+                    container.appendChild(img);
+                    container.appendChild(downloadBtn);
+                    gallery.appendChild(container);
                 }
             });
         }
@@ -314,40 +379,16 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Mobile: simular clique longo na imagem
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = function() {
-            // Criar elemento temporário para simular clique
-            const tempImg = document.createElement('img');
-            tempImg.src = imageUrl;
-            tempImg.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
-            document.body.appendChild(tempImg);
-            
-            // Simular evento de toque
-            const touchEvent = new TouchEvent('touchstart', {
-                bubbles: true,
-                cancelable: true,
-                touches: [new Touch({
-                    identifier: 0,
-                    target: tempImg,
-                    clientX: 0,
-                    clientY: 0
-                })]
-            });
-            
-            tempImg.dispatchEvent(touchEvent);
-            
-            setTimeout(() => {
-                document.body.removeChild(tempImg);
-                window.open(imageUrl, '_blank');
-            }, 100);
-        };
-        img.onerror = function() {
-            // Fallback: abrir diretamente
-            window.open(imageUrl, '_blank');
-        };
-        img.src = imageUrl;
+        // Mobile: criar link direto para a imagem
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        
+        // Simular clique no link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         
         // Mostrar aviso de sucesso
         showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
