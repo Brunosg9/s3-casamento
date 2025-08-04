@@ -152,11 +152,25 @@ function loadPhotos() {
                     var imgSrc = 'https://' + CONFIG.BUCKET_NAME + '.s3.' + CONFIG.REGION + '.amazonaws.com/' + obj.Key;
                     window.allImages.push(imgSrc);
                     
+                    var container = document.createElement('div');
+                    container.style.position = 'relative';
+                    
                     var img = document.createElement('img');
                     img.src = imgSrc;
                     img.style.cursor = 'pointer';
                     img.onclick = function() { openModal(imgSrc, index); };
-                    gallery.appendChild(img);
+                    
+                    var downloadBtn = document.createElement('button');
+                    downloadBtn.innerHTML = '⬇';
+                    downloadBtn.style.cssText = 'position: absolute; top: 5px; right: 5px; background: rgba(40,167,69,0.9); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; z-index: 5;';
+                    downloadBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        downloadPhoto(imgSrc, index);
+                    };
+                    
+                    container.appendChild(img);
+                    container.appendChild(downloadBtn);
+                    gallery.appendChild(container);
                 }
             });
         }
@@ -305,3 +319,51 @@ document.addEventListener('keydown', function(e) {
 window.onload = function() {
     loadPhotos();
 };
+
+// Função para baixar todas as fotos
+function downloadAllPhotos() {
+    if (!window.allImages || window.allImages.length === 0) {
+        alert('Nenhuma foto encontrada para download!');
+        return;
+    }
+    
+    showLoading();
+    
+    // Criar um delay entre downloads para evitar sobrecarga
+    let downloadIndex = 0;
+    const downloadInterval = setInterval(function() {
+        if (downloadIndex >= window.allImages.length) {
+            clearInterval(downloadInterval);
+            hideLoading();
+            alert('Download de ' + window.allImages.length + ' fotos iniciado!');
+            return;
+        }
+        
+        const imageUrl = window.allImages[downloadIndex];
+        const fileName = 'foto_casamento_' + (downloadIndex + 1).toString().padStart(3, '0') + '.jpg';
+        
+        // Criar link temporário para download
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        downloadIndex++;
+    }, 500); // 500ms de delay entre cada download
+}
+
+// Função para baixar foto individual
+function downloadPhoto(imageUrl, index) {
+    const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
+    
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
