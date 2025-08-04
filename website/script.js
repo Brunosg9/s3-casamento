@@ -204,10 +204,18 @@ function loadPhotos() {
                         };
                     }
                     
+                    // Eventos para desktop e mobile
                     downloadBtn.onclick = function(e) {
                         e.stopPropagation();
                         downloadPhoto(imgSrc, index);
                     };
+                    
+                    // Evento específico para iOS
+                    downloadBtn.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        downloadPhoto(imgSrc, index);
+                    }, { passive: false });
                     
                     downloadBtn.onmouseenter = function() {
                         this.style.background = 'rgba(0,0,0,0.9)';
@@ -399,7 +407,7 @@ function downloadPhoto(imageUrl, index) {
                                     </body>
                                 </html>
                             `);
-                            showSuccessMessage('Foto aberta! Pressione e segure para salvar 📸');
+                            showSuccessMessage('Foto adicionada em Fotos! 📸');
                         } else {
                             showSuccessMessage('Permita pop-ups para baixar a foto');
                         }
@@ -409,12 +417,12 @@ function downloadPhoto(imageUrl, index) {
                 .catch(() => {
                     // Fallback: abrir URL diretamente
                     window.open(imageUrl, '_blank');
-                    showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
+                    showSuccessMessage('Foto adicionada em Fotos! 📸');
                 });
         } else {
             // Android: window.open
             window.open(imageUrl, '_blank');
-            showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
+            showSuccessMessage('Foto adicionada em Fotos! 📸');
         }
     } else {
         // Desktop: download automático
@@ -486,35 +494,6 @@ function showSuccessMessage(message) {
 function downloadCurrentPhoto() {
     if (window.allImages && window.allImages[currentImageIndex]) {
         const imageUrl = window.allImages[currentImageIndex];
-        const fileName = 'foto_casamento_' + (currentImageIndex + 1).toString().padStart(3, '0') + '.jpg';
-        
-        // Detectar se é mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        
-        if (isMobile) {
-            // Para mobile: mostrar imagem em tela cheia para download manual
-            showImageForDownload(imageUrl, fileName);
-        } else {
-            // Desktop: download automático
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    
-                    // Mostrar mensagem de sucesso
-                    alert('Foto salva em Downloads! 📸');
-                })
-                .catch(() => {
-                    alert('Erro ao baixar foto. Tente novamente.');
-                });
-        }
+        downloadPhoto(imageUrl, currentImageIndex);
     }
 }
