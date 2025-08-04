@@ -314,10 +314,57 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Para mobile: abrir em nova aba para download manual
-        window.open(imageUrl, '_blank');
+        // Estratégia 1: Tentar download direto primeiro
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = fileName;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Adicionar ao DOM e clicar
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Estratégia 2: Fallback após 2 segundos
+        setTimeout(() => {
+            // Criar elemento de instrução
+            const instruction = document.createElement('div');
+            instruction.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.9);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                z-index: 10000;
+                font-size: 14px;
+                text-align: center;
+                max-width: 90%;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            instruction.innerHTML = `
+                📸 Para salvar: pressione e segure a imagem<br>
+                <small>Esta mensagem desaparecerá em 5 segundos</small>
+            `;
+            
+            document.body.appendChild(instruction);
+            
+            // Remover após 5 segundos
+            setTimeout(() => {
+                if (document.body.contains(instruction)) {
+                    document.body.removeChild(instruction);
+                }
+            }, 5000);
+            
+            // Abrir imagem em nova aba
+            window.open(imageUrl, '_blank');
+        }, 2000);
+        
     } else {
-        // Para desktop: download automático
+        // Desktop: download automático
         fetch(imageUrl)
             .then(response => response.blob())
             .then(blob => {
