@@ -312,7 +312,11 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        window.open(imageUrl, '_blank');
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = fileName;
+        link.target = '_blank';
+        link.click();
     } else {
         fetch(imageUrl)
             .then(response => response.blob())
@@ -343,45 +347,29 @@ function downloadCurrentPhoto() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Estratégia 1: Tentar download direto primeiro
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    
-                    if (isIOS) {
-                        // iOS: Abrir em nova aba com data URL
-                        const reader = new FileReader();
-                        reader.onload = function() {
-                            const newWindow = window.open();
-                            newWindow.document.write('<img src="' + reader.result + '" style="max-width:100%;height:auto;"><br><p>Pressione e segure a imagem para salvar</p>');
-                        };
-                        reader.readAsDataURL(blob);
-                    } else {
-                        // Android: Tentar download direto
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = fileName;
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        
-                        // Simular clique com delay
-                        setTimeout(() => {
-                            link.click();
-                            document.body.removeChild(link);
-                            window.URL.revokeObjectURL(url);
-                        }, 100);
-                        
-                        // Fallback: abrir em nova aba após 2 segundos
-                        setTimeout(() => {
-                            window.open(imageUrl, '_blank');
-                        }, 2000);
-                    }
-                })
-                .catch(() => {
-                    // Fallback: abrir em nova aba
-                    window.open(imageUrl, '_blank');
-                });
+            // Para mobile: criar link temporário com download forçado
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            
+            // Adicionar ao DOM temporariamente
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            
+            // Simular clique
+            link.click();
+            
+            // Remover após delay
+            setTimeout(() => {
+                document.body.removeChild(link);
+            }, 100);
+            
+            // Mostrar instrução para o usuário
+            setTimeout(() => {
+                alert('Se o download não iniciou, a foto foi aberta em nova aba. Pressione e segure a imagem para salvar.');
+            }, 1000);
         } else {
             // Desktop: download automático
             fetch(imageUrl)
