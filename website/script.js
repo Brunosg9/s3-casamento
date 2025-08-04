@@ -152,11 +152,69 @@ function loadPhotos() {
                     var imgSrc = 'https://' + CONFIG.BUCKET_NAME + '.s3.' + CONFIG.REGION + '.amazonaws.com/' + obj.Key;
                     window.allImages.push(imgSrc);
                     
+                    // Container para imagem + botão
+                    var container = document.createElement('div');
+                    container.style.position = 'relative';
+                    container.style.display = 'inline-block';
+                    
                     var img = document.createElement('img');
                     img.src = imgSrc;
                     img.style.cursor = 'pointer';
                     img.onclick = function() { openModal(imgSrc, index); };
-                    gallery.appendChild(img);
+                    
+                    // Botão de download
+                    var downloadBtn = document.createElement('button');
+                    downloadBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16L7 11L8.4 9.6L11 12.2V4H13V12.2L15.6 9.6L17 11L12 16Z" fill="currentColor"/>
+                            <path d="M5 20V18H19V20H5Z" fill="currentColor"/>
+                        </svg>
+                    `;
+                    downloadBtn.style.cssText = `
+                        position: absolute;
+                        top: 8px;
+                        right: 8px;
+                        background: rgba(0,0,0,0.7);
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 32px;
+                        height: 32px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: all 0.3s ease;
+                        z-index: 10;
+                    `;
+                    
+                    // Hover effects
+                    container.onmouseenter = function() {
+                        downloadBtn.style.opacity = '1';
+                    };
+                    container.onmouseleave = function() {
+                        downloadBtn.style.opacity = '0';
+                    };
+                    
+                    downloadBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        downloadPhoto(imgSrc, index);
+                    };
+                    
+                    downloadBtn.onmouseenter = function() {
+                        this.style.background = 'rgba(0,0,0,0.9)';
+                        this.style.transform = 'scale(1.1)';
+                    };
+                    
+                    downloadBtn.onmouseleave = function() {
+                        this.style.background = 'rgba(0,0,0,0.7)';
+                        this.style.transform = 'scale(1)';
+                    };
+                    
+                    container.appendChild(img);
+                    container.appendChild(downloadBtn);
+                    gallery.appendChild(container);
                 }
             });
         }
@@ -431,39 +489,3 @@ function downloadPhoto(imageUrl, index) {
     }
 }
 
-// Função para baixar a foto atual do modal
-function downloadCurrentPhoto() {
-    if (window.allImages && window.allImages[currentImageIndex]) {
-        const imageUrl = window.allImages[currentImageIndex];
-        const fileName = 'foto_casamento_' + (currentImageIndex + 1).toString().padStart(3, '0') + '.jpg';
-        
-        // Detectar se é mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        
-        if (isMobile) {
-            // Para mobile: mostrar imagem em tela cheia para download manual
-            showImageForDownload(imageUrl, fileName);
-        } else {
-            // Desktop: download automático
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    
-                    // Mostrar mensagem de sucesso
-                    alert('Foto salva em Downloads! 📸');
-                })
-                .catch(() => {
-                    alert('Erro ao baixar foto. Tente novamente.');
-                });
-        }
-    }
-}
