@@ -330,8 +330,12 @@ function downloadPhoto(imageUrl, index) {
                 }, 100);
             })
             .catch(() => {
-                window.open(imageUrl, '_blank');
-                alert('Foto aberta em nova aba. Pressione e segure para salvar.');
+                const newWindow = window.open(imageUrl, '_blank');
+                if (newWindow && !newWindow.closed) {
+                    alert('Foto aberta em nova aba. Pressione e segure para salvar.');
+                } else {
+                    alert('Pop-ups estão bloqueados! Permita pop-ups para este site e tente novamente.');
+                }
             });
     } else {
         fetch(imageUrl)
@@ -385,10 +389,10 @@ function downloadCurrentPhoto() {
                 .catch(() => {
                     // Fallback: abrir em nova aba
                     const newWindow = window.open(imageUrl, '_blank');
-                    if (newWindow) {
+                    if (newWindow && !newWindow.closed) {
                         alert('Foto aberta em nova aba. Pressione e segure para salvar.');
                     } else {
-                        alert('Erro ao baixar. Verifique se pop-ups estão permitidos.');
+                        alert('Pop-ups estão bloqueados! Permita pop-ups para este site e tente novamente.');
                     }
                 });
         } else {
