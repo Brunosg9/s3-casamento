@@ -2,9 +2,6 @@
 resource "aws_amplify_app" "casamento_app" {
   name       = "casamento-fotos-app"
   repository = "https://github.com/Brunosg9/s3-casamento"
-  
-  # Token de acesso ao GitHub
-  access_token = var.github_token
 
   # Build settings
   build_spec = <<-EOT

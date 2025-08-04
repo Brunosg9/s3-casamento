@@ -340,12 +340,50 @@ function downloadCurrentPhoto() {
         
         // Detectar se é mobile
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Para mobile: abrir em nova aba para download manual
-            window.open(imageUrl, '_blank');
+            // Estratégia 1: Tentar download direto primeiro
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    if (isIOS) {
+                        // iOS: Abrir em nova aba com data URL
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            const newWindow = window.open();
+                            newWindow.document.write('<img src="' + reader.result + '" style="max-width:100%;height:auto;"><br><p>Pressione e segure a imagem para salvar</p>');
+                        };
+                        reader.readAsDataURL(blob);
+                    } else {
+                        // Android: Tentar download direto
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = fileName;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        
+                        // Simular clique com delay
+                        setTimeout(() => {
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                        }, 100);
+                        
+                        // Fallback: abrir em nova aba após 2 segundos
+                        setTimeout(() => {
+                            window.open(imageUrl, '_blank');
+                        }, 2000);
+                    }
+                })
+                .catch(() => {
+                    // Fallback: abrir em nova aba
+                    window.open(imageUrl, '_blank');
+                });
         } else {
-            // Para desktop: download automático
+            // Desktop: download automático
             fetch(imageUrl)
                 .then(response => response.blob())
                 .then(blob => {
@@ -359,7 +397,6 @@ function downloadCurrentPhoto() {
                     window.URL.revokeObjectURL(url);
                 })
                 .catch(() => {
-                    // Fallback: abrir em nova aba
                     window.open(imageUrl, '_blank');
                 });
         }
