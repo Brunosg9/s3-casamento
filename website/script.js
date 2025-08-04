@@ -112,7 +112,7 @@ function uploadPhotos() {
             
             if (uploadCount === totalFiles) {
                 hideLoading();
-                alert(successCount + ' foto(s) enviadas');
+                showSuccessMessage(successCount + ' foto(s) adicionadas 📸');
                 document.getElementById('fileInput').value = '';
                 document.getElementById('preview').innerHTML = '';
                 selectedFiles = [];
@@ -377,10 +377,24 @@ window.onload = function() {
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     if (isMobile) {
-        // Força o comportamento de abrir em nova aba para permitir "salvar como"
-        window.open(imageUrl, '_blank');
+        if (isIOS) {
+            // iOS: criar link temporário e abrir
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            // Android: window.open
+            window.open(imageUrl, '_blank');
+        }
+        
+        // Mostrar mensagem de instrução
         showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
     } else {
         // Desktop: download automático
@@ -395,7 +409,7 @@ function downloadPhoto(imageUrl, index) {
                 link.click();
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
-                showSuccessMessage('Download iniciado! 📸');
+                showSuccessMessage('Foto salva em Downloads! 📸');
             })
             .catch(() => {
                 alert('Erro ao baixar foto. Tente novamente.');
