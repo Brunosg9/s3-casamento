@@ -152,69 +152,11 @@ function loadPhotos() {
                     var imgSrc = 'https://' + CONFIG.BUCKET_NAME + '.s3.' + CONFIG.REGION + '.amazonaws.com/' + obj.Key;
                     window.allImages.push(imgSrc);
                     
-                    // Container para imagem + botão
-                    var container = document.createElement('div');
-                    container.style.position = 'relative';
-                    container.style.display = 'inline-block';
-                    
                     var img = document.createElement('img');
                     img.src = imgSrc;
                     img.style.cursor = 'pointer';
                     img.onclick = function() { openModal(imgSrc, index); };
-                    
-                    // Botão de download
-                    var downloadBtn = document.createElement('button');
-                    downloadBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 16L7 11L8.4 9.6L11 12.2V4H13V12.2L15.6 9.6L17 11L12 16Z" fill="currentColor"/>
-                            <path d="M5 20V18H19V20H5Z" fill="currentColor"/>
-                        </svg>
-                    `;
-                    downloadBtn.style.cssText = `
-                        position: absolute;
-                        top: 8px;
-                        right: 8px;
-                        background: rgba(0,0,0,0.7);
-                        color: white;
-                        border: none;
-                        border-radius: 50%;
-                        width: 32px;
-                        height: 32px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        opacity: 0;
-                        transition: all 0.3s ease;
-                        z-index: 10;
-                    `;
-                    
-                    // Hover effects
-                    container.onmouseenter = function() {
-                        downloadBtn.style.opacity = '1';
-                    };
-                    container.onmouseleave = function() {
-                        downloadBtn.style.opacity = '0';
-                    };
-                    
-                    downloadBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        downloadPhoto(imgSrc, index);
-                    };
-                    
-                    downloadBtn.onmouseenter = function() {
-                        this.style.background = 'rgba(0,0,0,0.9)';
-                        this.style.transform = 'scale(1.1)';
-                    };
-                    
-                    downloadBtn.onmouseleave = function() {
-                        this.style.background = 'rgba(0,0,0,0.7)';
-                        this.style.transform = 'scale(1)';
-                    };
-                    
-                    container.appendChild(img);
-                    container.appendChild(downloadBtn);
-                    gallery.appendChild(container);
+                    gallery.appendChild(img);
                 }
             });
         }
@@ -364,128 +306,63 @@ window.onload = function() {
     loadPhotos();
 };
 
-// Função para mostrar imagem em tela cheia para download manual no mobile
-function showImageForDownload(imageUrl, fileName) {
-    // Criar overlay de download
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.95);
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-    `;
-    
-    // Criar imagem
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.style.cssText = `
-        max-width: 90%;
-        max-height: 70%;
-        object-fit: contain;
-        border-radius: 10px;
-    `;
-    
-    // Criar instruções com imagem de exemplo
-    const instructions = document.createElement('div');
-    instructions.style.cssText = `
-        color: white;
-        text-align: center;
-        margin-top: 20px;
-        font-size: 16px;
-        line-height: 1.4;
-        max-width: 90%;
-    `;
-    instructions.innerHTML = `
-        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin: 10px 0; backdrop-filter: blur(10px);">
-            <p style="font-size: 18px; margin-bottom: 15px; color: #4CAF50;"><strong>📸 Como salvar a foto:</strong></p>
-            
-            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
-                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">1</div>
-                <p style="margin: 0; font-size: 16px;">Pressione e segure a imagem acima ☝️</p>
-            </div>
-            
-            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
-                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">2</div>
-                <p style="margin: 0; font-size: 16px;">Aparecerá um menu como este:</p>
-            </div>
-            
-            <div style="text-align: center; margin: 20px 0;">
-                <img src="exemplo de download.jpg" style="max-width: 280px; width: 100%; border-radius: 12px; border: 3px solid #4CAF50; box-shadow: 0 6px 12px rgba(0,0,0,0.4); transition: transform 0.3s ease;" alt="Exemplo de download">
-            </div>
-            
-            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
-                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">3</div>
-                <p style="margin: 0; font-size: 16px;">Toque em <strong style="color: #4CAF50;">"Salvar na galeria"</strong> ✅</p>
-            </div>
-        </div>
-        
-        <p style="margin-top: 20px; font-size: 14px; opacity: 0.7; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">💡 Toque fora da imagem para fechar</p>
-    `;
-    
-    // Botão fechar
-    const closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '×';
-    closeBtn.style.cssText = `
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255,255,255,0.9);
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #333;
-    `;
-    
-    // Eventos
-    closeBtn.onclick = () => document.body.removeChild(overlay);
-    overlay.onclick = (e) => {
-        if (e.target === overlay) {
-            document.body.removeChild(overlay);
-        }
-    };
-    
-    // Montar e exibir
-    overlay.appendChild(closeBtn);
-    overlay.appendChild(img);
-    overlay.appendChild(instructions);
-    document.body.appendChild(overlay);
-}
+
 
 // Função para baixar foto individual
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    if (isMobile) {
-        showImageForDownload(imageUrl, fileName);
-    } else {
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => {
-                alert('Erro ao baixar foto. Tente novamente.');
-            });
-    }
+    fetch(imageUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(() => {
+            alert('Erro ao baixar foto. Tente novamente.');
+        });
 }
 
+// Função para baixar a foto atual do modal
+function downloadCurrentPhoto() {
+    if (window.allImages && window.allImages[currentImageIndex]) {
+        const imageUrl = window.allImages[currentImageIndex];
+        const fileName = 'foto_casamento_' + (currentImageIndex + 1).toString().padStart(3, '0') + '.jpg';
+        
+        // Detectar se é mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Para mobile: mostrar imagem em tela cheia para download manual
+            showImageForDownload(imageUrl, fileName);
+        } else {
+            // Desktop: download automático
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    // Mostrar mensagem de sucesso
+                    alert('Foto salva em Downloads! 📸');
+                })
+                .catch(() => {
+                    alert('Erro ao baixar foto. Tente novamente.');
+                });
+        }
+    }
+}
