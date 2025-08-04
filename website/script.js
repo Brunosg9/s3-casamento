@@ -314,54 +314,11 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Estratégia 1: Tentar download direto primeiro
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = fileName;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
+        // Mobile: abrir imagem diretamente (funciona como clicar na imagem)
+        window.open(imageUrl, '_blank');
         
-        // Adicionar ao DOM e clicar
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Estratégia 2: Fallback após 2 segundos
-        setTimeout(() => {
-            // Criar elemento de instrução
-            const instruction = document.createElement('div');
-            instruction.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0,0,0,0.9);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                z-index: 10000;
-                font-size: 14px;
-                text-align: center;
-                max-width: 90%;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
-            instruction.innerHTML = `
-                📸 Para salvar: pressione e segure a imagem<br>
-                <small>Esta mensagem desaparecerá em 5 segundos</small>
-            `;
-            
-            document.body.appendChild(instruction);
-            
-            // Remover após 5 segundos
-            setTimeout(() => {
-                if (document.body.contains(instruction)) {
-                    document.body.removeChild(instruction);
-                }
-            }, 5000);
-            
-            // Abrir imagem em nova aba
-            window.open(imageUrl, '_blank');
-        }, 2000);
+        // Mostrar aviso de sucesso
+        showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
         
     } else {
         // Desktop: download automático
@@ -377,11 +334,59 @@ function downloadPhoto(imageUrl, index) {
                 link.click();
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
+                
+                // Mostrar aviso de sucesso
+                showSuccessMessage('Foto salva em Downloads! 📸');
             })
             .catch(() => {
                 alert('Erro ao baixar foto. Tente novamente.');
             });
     }
+}
+
+// Função para mostrar mensagem de sucesso
+function showSuccessMessage(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4CAF50;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 25px;
+        z-index: 10000;
+        font-size: 16px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        animation: slideUp 0.3s ease;
+    `;
+    toast.textContent = message;
+    
+    // Adicionar animação CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(toast);
+    
+    // Remover após 3 segundos
+    setTimeout(() => {
+        if (document.body.contains(toast)) {
+            toast.style.animation = 'slideUp 0.3s ease reverse';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }
+    }, 3000);
 }
 
 // Função para baixar a foto atual do modal
