@@ -379,19 +379,28 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Mobile: criar link direto para a imagem
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        
-        // Simular clique no link
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Mostrar aviso de sucesso
-        showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
+        // Mobile: usar fetch + blob para forçar download
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                
+                // Mostrar aviso de sucesso
+                showSuccessMessage('Download iniciado! 📸');
+            })
+            .catch(() => {
+                // Fallback: abrir em nova aba
+                window.open(imageUrl, '_blank');
+                showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
+            });
         
     } else {
         // Desktop: download automático
@@ -409,7 +418,7 @@ function downloadPhoto(imageUrl, index) {
                 window.URL.revokeObjectURL(url);
                 
                 // Mostrar aviso de sucesso
-                showSuccessMessage('Foto salva em Downloads! 📸');
+                showSuccessMessage('Download iniciado! 📸');
             })
             .catch(() => {
                 alert('Erro ao baixar foto. Tente novamente.');
