@@ -312,11 +312,23 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = fileName;
-        link.target = '_blank';
-        link.click();
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                alert('Foto salva em Fotos! 📸');
+            })
+            .catch(() => {
+                alert('Pressione e segure a foto para salvar.');
+            });
     } else {
         fetch(imageUrl)
             .then(response => response.blob())
@@ -331,7 +343,7 @@ function downloadPhoto(imageUrl, index) {
                 window.URL.revokeObjectURL(url);
             })
             .catch(() => {
-                window.open(imageUrl, '_blank');
+                alert('Erro ao baixar foto. Tente novamente.');
             });
     }
 }
@@ -347,29 +359,27 @@ function downloadCurrentPhoto() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Para mobile: criar link temporário com download forçado
-            const link = document.createElement('a');
-            link.href = imageUrl;
-            link.download = fileName;
-            link.target = '_blank';
-            link.rel = 'noopener';
-            
-            // Adicionar ao DOM temporariamente
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            
-            // Simular clique
-            link.click();
-            
-            // Remover após delay
-            setTimeout(() => {
-                document.body.removeChild(link);
-            }, 100);
-            
-            // Mostrar instrução para o usuário
-            setTimeout(() => {
-                alert('Se o download não iniciou, a foto foi aberta em nova aba. Pressione e segure a imagem para salvar.');
-            }, 1000);
+            // Para mobile: usar fetch para baixar sem abrir URL
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    // Mostrar mensagem de sucesso
+                    alert('Foto salva em Fotos! 📸');
+                })
+                .catch(() => {
+                    // Se falhar, mostrar instrução
+                    alert('Pressione e segure a foto para salvar em Fotos.');
+                });
         } else {
             // Desktop: download automático
             fetch(imageUrl)
@@ -383,9 +393,12 @@ function downloadCurrentPhoto() {
                     link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
+                    
+                    // Mostrar mensagem de sucesso
+                    alert('Foto salva em Downloads! 📸');
                 })
                 .catch(() => {
-                    window.open(imageUrl, '_blank');
+                    alert('Erro ao baixar foto. Tente novamente.');
                 });
         }
     }
