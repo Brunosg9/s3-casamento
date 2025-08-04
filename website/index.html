@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Casamento</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <img src="foto de capa.jpg" alt="Convite de Casamento" class="wedding-cover">
+        
+        <div class="upload-section">
+            <h3>Eternize momentos aqui</h3>
+            <input type="file" id="fileInput" multiple accept="image/*" onchange="showPreview()">
+            <div class="button-container">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Adicionar Fotos</button>
+                <button class="upload-btn" onclick="uploadPhotos()">Enviar Fotos</button>
+            </div>
+            <div id="preview" class="gallery" style="margin-top: 20px;"></div>
+        </div>
+        
+        <div id="gallery" class="gallery"></div>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Enviando fotos...</p>
+        </div>
+    </div>
+    
+    <div id="photoModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-container">
+            <div class="image-slider" id="imageSlider">
+                <img class="modal-content" id="modalImage">
+            </div>
+            <div class="gallery-nav" id="galleryNav" style="display: none;">
+                <div class="page-counter" id="pageCounter">1/1</div>
+                <div class="progress-container">
+                    <div class="progress-bar" onclick="clickProgress(event)">
+                        <div class="progress-fill" id="progressFill">
+                            <div class="progress-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.24.min.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

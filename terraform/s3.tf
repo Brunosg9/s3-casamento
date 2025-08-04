@@ -28,11 +28,16 @@ resource "aws_s3_bucket_website_configuration" "wedding_site" {
   error_document {
     key = "error.html"
   }
+}
+
+resource "aws_s3_bucket_cors_configuration" "wedding_site" {
+  bucket = aws_s3_bucket.wedding_site.id
 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST"]
     allowed_origins = ["*"]
     expose_headers  = ["ETag"]
+    max_age_seconds = 3000
   }
 }

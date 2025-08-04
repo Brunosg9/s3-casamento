@@ -1,0 +1,342 @@
+body {
+    margin: 0;
+    padding: 20px;
+    background: url('fundo.jpg') center/cover no-repeat fixed;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.wedding-cover {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 auto 30px auto;
+    display: block;
+}
+
+.upload-section {
+    margin: 30px auto;
+    padding: 15px;
+    background-image: url('fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 400px;
+    position: relative;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.upload-section > * {
+    position: relative;
+    z-index: 2;
+}
+
+.upload-btn {
+    background: #81c7d4;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0;
+    flex: 1;
+    max-width: 150px;
+}
+
+.upload-btn:hover {
+    background: #6ba3b0;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.gallery img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-container {
+    position: relative;
+}
+
+.preview-delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255,0,0,0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(129, 199, 212, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    background: url('carregamento.jpg') center/contain no-repeat;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+    filter: brightness(0) invert(1);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+}
+
+.modal * {
+    background-color: transparent;
+}
+
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    touch-action: none;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 80%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    transition: transform 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 2002;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+    border: none;
+}
+
+.close:hover {
+    background: rgba(0, 0, 0, 1);
+}
+
+.modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 60px 20px 100px 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-slider {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.image-slider:active {
+    cursor: grabbing;
+}
+
+.gallery-nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    padding: 15px 25px;
+    border-radius: 25px;
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.page-counter {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffffff, #e0e0e0);
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.progress-thumb {
+    position: absolute;
+    right: -7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #ffffff, #e0e0e0);
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.progress-thumb:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+#fileInput {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 100%;
+        max-height: 100%;
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+    }
+    
+    .modal-container {
+        padding: 0;
+    }
+    
+    .gallery-nav {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: none;
+        width: 100%;
+        border-radius: 0;
+        padding: 20px;
+        justify-content: center;
+    }
+    
+    .progress-bar {
+        width: 60vw;
+        height: 6px;
+        margin: 15px 0;
+    }
+    
+    .progress-thumb {
+        width: 12px;
+        height: 12px;
+        right: -6px;
+        border: 2px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+}
+
+@media (max-width: 480px) {
+    .close {
+        top: 5px;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 25px;
+    }
+}
