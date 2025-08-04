@@ -377,31 +377,11 @@ window.onload = function() {
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     if (isMobile) {
-        // Mobile: usar fetch + blob para forçar download
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileName;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-                
-                // Mostrar aviso de sucesso
-                showSuccessMessage('Download iniciado! 📸');
-            })
-            .catch(() => {
-                // Fallback: abrir em nova aba
-                window.open(imageUrl, '_blank');
-                showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
-            });
-        
+        // Força o comportamento de abrir em nova aba para permitir "salvar como"
+        window.open(imageUrl, '_blank');
+        showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
     } else {
         // Desktop: download automático
         fetch(imageUrl)
@@ -411,13 +391,10 @@ function downloadPhoto(imageUrl, index) {
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = fileName;
-                link.style.display = 'none';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
-                
-                // Mostrar aviso de sucesso
                 showSuccessMessage('Download iniciado! 📸');
             })
             .catch(() => {
