@@ -311,23 +311,30 @@ window.onload = function() {
 // Função para baixar foto individual
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    fetch(imageUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(() => {
-            alert('Erro ao baixar foto. Tente novamente.');
-        });
+    if (isMobile) {
+        // Para mobile: abrir em nova aba para download manual
+        window.open(imageUrl, '_blank');
+    } else {
+        // Para desktop: download automático
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                alert('Erro ao baixar foto. Tente novamente.');
+            });
+    }
 }
 
 // Função para baixar a foto atual do modal
