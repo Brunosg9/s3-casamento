@@ -27,3 +27,10 @@ variable "s3_public_access_block" {
     restrict_public_buckets = false
   }
 }
+
+variable "github_token" {
+  description = "GitHub Personal Access Token para Amplify"
+  type        = string
+  sensitive   = true
+}
+
