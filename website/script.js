@@ -389,81 +389,13 @@ function downloadPhoto(imageUrl, index) {
 
     if (isMobile) {
         if (isIOS) {
-            // iOS: usar lógica adaptada do exemplo
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        const base64Data = reader.result.split(',')[1]; // Remove data:image/jpeg;base64,
-                        
-                        // Detectar versão do iOS
-                        const isChrome = navigator.userAgent.toLowerCase().indexOf('crios') > -1 ||
-                                       navigator.vendor.toLowerCase().indexOf('google') > -1;
-                        let iOSVersion = [13]; // Default para versões mais novas
-                        
-                        if (iOS) {
-                            const match = navigator.userAgent.match(/OS [\d_]+/i);
-                            if (match) {
-                                iOSVersion = match[0].substr(3).split('_').map(n => parseInt(n));
-                            }
-                        }
-                        
-                        // Converter base64 para blob
-                        const binary = atob(base64Data.replace(/\s/g, ''));
-                        const len = binary.length;
-                        const buffer = new ArrayBuffer(len);
-                        const view = new Uint8Array(buffer);
-                        for (let i = 0; i < len; i++) {
-                            view[i] = binary.charCodeAt(i);
-                        }
-                        
-                        const linkElement = document.createElement('a');
-                        let hrefUrl = '';
-                        let downloadBlob = '';
-                        let contentType = 'image/jpeg';
-                        
-                        if (isIOS && !isChrome && iOSVersion[0] <= 12) {
-                            // iOS 12 e anteriores
-                            hrefUrl = reader.result; // data URL completa
-                        } else {
-                            // iOS 13+ ou Chrome
-                            if (isIOS && !isChrome) {
-                                contentType = 'application/octet-stream';
-                            }
-                            downloadBlob = new Blob([view], { type: contentType });
-                            hrefUrl = window.URL.createObjectURL(downloadBlob);
-                        }
-                        
-                        linkElement.setAttribute('href', hrefUrl);
-                        linkElement.setAttribute('target', '_blank');
-                        
-                        // Adicionar download apenas para versões compatíveis
-                        if ((isIOS && (iOSVersion[0] > 12 || isChrome)) || !isIOS) {
-                            linkElement.setAttribute('download', fileName);
-                        }
-                        
-                        // Simular clique
-                        const clickEvent = new MouseEvent('click', {
-                            view: window,
-                            bubbles: true,
-                            cancelable: false
-                        });
-                        linkElement.dispatchEvent(clickEvent);
-                        
-                        showSuccessMessage('Foto adicionada em Fotos! 📸');
-                    };
-                    reader.readAsDataURL(blob);
-                })
-                .catch(() => {
-                    // Fallback: abrir URL diretamente
-                    window.open(imageUrl, '_blank');
-                    showSuccessMessage('Foto adicionada em Fotos! 📸');
-                });
+            // iOS: abrir imagem em nova aba para salvamento manual
+            window.open(imageUrl, '_blank');
+            showSuccessMessage('Imagem aberta! Pressione e segure para salvar em Fotos 📸');
         } else {
             // Android: window.open
             window.open(imageUrl, '_blank');
-            showSuccessMessage('Foto adicionada em Fotos! 📸');
+            showSuccessMessage('Imagem aberta! Pressione e segure para salvar em Fotos 📸');
         }
     } else {
         // Desktop: download automático
