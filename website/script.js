@@ -306,37 +306,91 @@ window.onload = function() {
     loadPhotos();
 };
 
+// Função para mostrar imagem em tela cheia para download manual no mobile
+function showImageForDownload(imageUrl, fileName) {
+    // Criar overlay de download
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    `;
+    
+    // Criar imagem
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.style.cssText = `
+        max-width: 90%;
+        max-height: 70%;
+        object-fit: contain;
+        border-radius: 10px;
+    `;
+    
+    // Criar instruções
+    const instructions = document.createElement('div');
+    instructions.style.cssText = `
+        color: white;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 18px;
+        line-height: 1.5;
+    `;
+    instructions.innerHTML = `
+        <p><strong>Para salvar a foto:</strong></p>
+        <p>1. Pressione e segure a imagem acima</p>
+        <p>2. Selecione "Salvar na galeria" ou "Salvar imagem"</p>
+        <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">Toque fora da imagem para fechar</p>
+    `;
+    
+    // Botão fechar
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.9);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+    `;
+    
+    // Eventos
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+        }
+    };
+    
+    // Montar e exibir
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(img);
+    overlay.appendChild(instructions);
+    document.body.appendChild(overlay);
+}
+
 // Função para baixar foto individual
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileName;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                
-                setTimeout(() => {
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    alert('Foto salva em Fotos! 📸');
-                }, 100);
-            })
-            .catch(() => {
-                const newWindow = window.open(imageUrl, '_blank');
-                if (newWindow && !newWindow.closed) {
-                    alert('Foto aberta em nova aba. Pressione e segure para salvar.');
-                } else {
-                    alert('Pop-ups estão bloqueados! Permita pop-ups para este site e tente novamente.');
-                }
-            });
+        showImageForDownload(imageUrl, fileName);
     } else {
         fetch(imageUrl)
             .then(response => response.blob())
@@ -367,34 +421,8 @@ function downloadCurrentPhoto() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Para mobile: download direto com fetch
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = fileName;
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    
-                    // Simular clique com delay
-                    setTimeout(() => {
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-                        alert('Foto salva em Fotos! 📸');
-                    }, 100);
-                })
-                .catch(() => {
-                    // Fallback: abrir em nova aba
-                    const newWindow = window.open(imageUrl, '_blank');
-                    if (newWindow && !newWindow.closed) {
-                        alert('Foto aberta em nova aba. Pressione e segure para salvar.');
-                    } else {
-                        alert('Pop-ups estão bloqueados! Permita pop-ups para este site e tente novamente.');
-                    }
-                });
+            // Para mobile: mostrar imagem em tela cheia para download manual
+            showImageForDownload(imageUrl, fileName);
         } else {
             // Desktop: download automático
             fetch(imageUrl)
