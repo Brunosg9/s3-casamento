@@ -22,6 +22,36 @@
         .logout-btn:hover {
             background: rgba(0, 0, 0, 0.9);
         }
+        .download-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2002;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: rgba(40, 167, 69, 0.8);
+            border-radius: 50%;
+            border: none;
+        }
+        .download-modal-btn:hover {
+            background: rgba(40, 167, 69, 1);
+        }
+        @media (max-width: 480px) {
+            .download-modal-btn {
+                top: 5px;
+                right: 50px;
+                width: 35px;
+                height: 35px;
+                line-height: 35px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -53,6 +83,7 @@
     
     <div id="photoModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
+        <button class="download-modal-btn" onclick="downloadCurrentPhoto()" title="Baixar foto">⬇</button>
         <div class="modal-container">
             <div class="image-slider" id="imageSlider">
                 <img class="modal-content" id="modalImage">

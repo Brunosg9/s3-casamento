@@ -152,25 +152,11 @@ function loadPhotos() {
                     var imgSrc = 'https://' + CONFIG.BUCKET_NAME + '.s3.' + CONFIG.REGION + '.amazonaws.com/' + obj.Key;
                     window.allImages.push(imgSrc);
                     
-                    var container = document.createElement('div');
-                    container.style.position = 'relative';
-                    
                     var img = document.createElement('img');
                     img.src = imgSrc;
                     img.style.cursor = 'pointer';
                     img.onclick = function() { openModal(imgSrc, index); };
-                    
-                    var downloadBtn = document.createElement('button');
-                    downloadBtn.innerHTML = '⬇';
-                    downloadBtn.style.cssText = 'position: absolute; top: 5px; right: 5px; background: rgba(40,167,69,0.9); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; z-index: 5;';
-                    downloadBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        downloadPhoto(imgSrc, index);
-                    };
-                    
-                    container.appendChild(img);
-                    container.appendChild(downloadBtn);
-                    gallery.appendChild(container);
+                    gallery.appendChild(img);
                 }
             });
         }
@@ -366,4 +352,20 @@ function downloadPhoto(imageUrl, index) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// Função para baixar a foto atual do modal
+function downloadCurrentPhoto() {
+    if (window.allImages && window.allImages[currentImageIndex]) {
+        const imageUrl = window.allImages[currentImageIndex];
+        const fileName = 'foto_casamento_' + (currentImageIndex + 1).toString().padStart(3, '0') + '.jpg';
+        
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
