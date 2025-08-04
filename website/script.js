@@ -312,23 +312,39 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            canvas.toBlob(function(blob) {
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = fileName;
                 link.style.display = 'none';
                 document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
+                
+                const event = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true
+                });
+                link.dispatchEvent(event);
+                
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+                
                 alert('Foto salva em Fotos! 📸');
-            })
-            .catch(() => {
-                alert('Pressione e segure a foto para salvar.');
-            });
+            }, 'image/jpeg', 0.9);
+        };
+        img.src = imageUrl;
     } else {
         fetch(imageUrl)
             .then(response => response.blob())
@@ -359,27 +375,44 @@ function downloadCurrentPhoto() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Para mobile: usar fetch para baixar sem abrir URL
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
+            // Para mobile: usar canvas para forçar download
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                canvas.toBlob(function(blob) {
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = fileName;
                     link.style.display = 'none';
                     document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
                     
-                    // Mostrar mensagem de sucesso
+                    // Forçar clique com evento touch
+                    const event = new MouseEvent('click', {
+                        view: window,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    link.dispatchEvent(event);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                    }, 100);
+                    
                     alert('Foto salva em Fotos! 📸');
-                })
-                .catch(() => {
-                    // Se falhar, mostrar instrução
-                    alert('Pressione e segure a foto para salvar em Fotos.');
-                });
+                }, 'image/jpeg', 0.9);
+            };
+            img.onerror = function() {
+                alert('Erro ao carregar imagem. Tente novamente.');
+            };
+            img.src = imageUrl;
         } else {
             // Desktop: download automático
             fetch(imageUrl)
