@@ -312,16 +312,9 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-            
-            canvas.toBlob(function(blob) {
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -329,22 +322,17 @@ function downloadPhoto(imageUrl, index) {
                 link.style.display = 'none';
                 document.body.appendChild(link);
                 
-                const event = new MouseEvent('click', {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true
-                });
-                link.dispatchEvent(event);
-                
                 setTimeout(() => {
+                    link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
+                    alert('Foto salva em Fotos! 📸');
                 }, 100);
-                
-                alert('Foto salva em Fotos! 📸');
-            }, 'image/jpeg', 0.9);
-        };
-        img.src = imageUrl;
+            })
+            .catch(() => {
+                window.open(imageUrl, '_blank');
+                alert('Foto aberta em nova aba. Pressione e segure para salvar.');
+            });
     } else {
         fetch(imageUrl)
             .then(response => response.blob())
@@ -375,17 +363,10 @@ function downloadCurrentPhoto() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isMobile) {
-            // Para mobile: usar canvas para forçar download
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                
-                canvas.toBlob(function(blob) {
+            // Para mobile: download direto com fetch
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
@@ -393,26 +374,23 @@ function downloadCurrentPhoto() {
                     link.style.display = 'none';
                     document.body.appendChild(link);
                     
-                    // Forçar clique com evento touch
-                    const event = new MouseEvent('click', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    link.dispatchEvent(event);
-                    
+                    // Simular clique com delay
                     setTimeout(() => {
+                        link.click();
                         document.body.removeChild(link);
                         window.URL.revokeObjectURL(url);
+                        alert('Foto salva em Fotos! 📸');
                     }, 100);
-                    
-                    alert('Foto salva em Fotos! 📸');
-                }, 'image/jpeg', 0.9);
-            };
-            img.onerror = function() {
-                alert('Erro ao carregar imagem. Tente novamente.');
-            };
-            img.src = imageUrl;
+                })
+                .catch(() => {
+                    // Fallback: abrir em nova aba
+                    const newWindow = window.open(imageUrl, '_blank');
+                    if (newWindow) {
+                        alert('Foto aberta em nova aba. Pressione e segure para salvar.');
+                    } else {
+                        alert('Erro ao baixar. Verifique se pop-ups estão permitidos.');
+                    }
+                });
         } else {
             // Desktop: download automático
             fetch(imageUrl)
