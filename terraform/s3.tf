@@ -18,26 +18,3 @@ resource "aws_s3_bucket_public_access_block" "wedding_site" {
   restrict_public_buckets = var.s3_public_access_block.restrict_public_buckets
 }
 
-resource "aws_s3_bucket_website_configuration" "wedding_site" {
-  bucket = aws_s3_bucket.wedding_site.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
-
-resource "aws_s3_bucket_cors_configuration" "wedding_site" {
-  bucket = aws_s3_bucket.wedding_site.id
-
-  cors_rule {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET", "PUT", "POST"]
-    allowed_origins = ["*"]
-    expose_headers  = ["ETag"]
-    max_age_seconds = 3000
-  }
-}

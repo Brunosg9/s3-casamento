@@ -65,27 +65,32 @@
         <div class="login-box">
             <img src="foto de capa.jpg" alt="Convite de Casamento" style="max-width: 200px; width: 100%; margin-bottom: 20px; border-radius: 10px;">
             <h2 class="login-title">Acesso à Galeria</h2>
-            <form onsubmit="checkPassword(event)">
-                <input type="password" id="password" class="login-input" placeholder="Digite a senha" required>
+            <form onsubmit="checkLogin(event)">
+                <input type="text" id="username" class="login-input" placeholder="Usuário" required>
+                <input type="password" id="password" class="login-input" placeholder="Senha" required>
                 <button type="submit" class="login-btn">Entrar</button>
             </form>
-            <div id="errorMessage" class="error-message">Senha incorreta. Tente novamente.</div>
+            <div id="errorMessage" class="error-message">Usuário ou senha incorretos. Tente novamente.</div>
         </div>
     </div>
 
     <script>
-        function checkPassword(event) {
+        function checkLogin(event) {
             event.preventDefault();
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const correctPassword = 'casamento2024'; // Altere aqui a senha
             
-            if (password === correctPassword) {
+            const correctUsername = 'casamentobrunoevanessa';
+            const correctPassword = 'Br@Ev2024#Wedding$';
+            
+            if (username === correctUsername && password === correctPassword) {
                 // Salvar login no localStorage
                 localStorage.setItem('authenticated', 'true');
                 // Redirecionar para a galeria
                 window.location.href = 'gallery.html';
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('username').value = '';
                 document.getElementById('password').value = '';
             }
         }
