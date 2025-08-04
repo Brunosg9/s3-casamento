@@ -314,8 +314,40 @@ function downloadPhoto(imageUrl, index) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Mobile: abrir imagem diretamente (funciona como clicar na imagem)
-        window.open(imageUrl, '_blank');
+        // Mobile: simular clique longo na imagem
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+            // Criar elemento temporário para simular clique
+            const tempImg = document.createElement('img');
+            tempImg.src = imageUrl;
+            tempImg.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+            document.body.appendChild(tempImg);
+            
+            // Simular evento de toque
+            const touchEvent = new TouchEvent('touchstart', {
+                bubbles: true,
+                cancelable: true,
+                touches: [new Touch({
+                    identifier: 0,
+                    target: tempImg,
+                    clientX: 0,
+                    clientY: 0
+                })]
+            });
+            
+            tempImg.dispatchEvent(touchEvent);
+            
+            setTimeout(() => {
+                document.body.removeChild(tempImg);
+                window.open(imageUrl, '_blank');
+            }, 100);
+        };
+        img.onerror = function() {
+            // Fallback: abrir diretamente
+            window.open(imageUrl, '_blank');
+        };
+        img.src = imageUrl;
         
         // Mostrar aviso de sucesso
         showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
