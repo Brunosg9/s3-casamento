@@ -306,41 +306,6 @@ window.onload = function() {
     loadPhotos();
 };
 
-// Função para baixar todas as fotos
-function downloadAllPhotos() {
-    if (!window.allImages || window.allImages.length === 0) {
-        alert('Nenhuma foto encontrada para download!');
-        return;
-    }
-    
-    showLoading();
-    
-    // Criar um delay entre downloads para evitar sobrecarga
-    let downloadIndex = 0;
-    const downloadInterval = setInterval(function() {
-        if (downloadIndex >= window.allImages.length) {
-            clearInterval(downloadInterval);
-            hideLoading();
-            alert('Download de ' + window.allImages.length + ' fotos iniciado!');
-            return;
-        }
-        
-        const imageUrl = window.allImages[downloadIndex];
-        const fileName = 'foto_casamento_' + (downloadIndex + 1).toString().padStart(3, '0') + '.jpg';
-        
-        // Criar link temporário para download
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = fileName;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        downloadIndex++;
-    }, 500); // 500ms de delay entre cada download
-}
-
 // Função para baixar foto individual
 function downloadPhoto(imageUrl, index) {
     const fileName = 'foto_casamento_' + (index + 1).toString().padStart(3, '0') + '.jpg';

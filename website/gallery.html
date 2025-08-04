@@ -26,21 +26,19 @@
             position: absolute;
             top: 10px;
             right: 60px;
-            color: #fff;
-            font-size: 20px;
-            font-weight: bold;
             cursor: pointer;
             z-index: 2002;
             width: 40px;
             height: 40px;
-            line-height: 40px;
-            text-align: center;
-            background: rgba(40, 167, 69, 0.8);
             border-radius: 50%;
             border: none;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            box-sizing: border-box;
         }
         .download-modal-btn:hover {
-            background: rgba(40, 167, 69, 1);
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
         }
         @media (max-width: 480px) {
             .download-modal-btn {
@@ -48,8 +46,7 @@
                 right: 50px;
                 width: 35px;
                 height: 35px;
-                line-height: 35px;
-                font-size: 18px;
+                padding: 6px;
             }
         }
     </style>
@@ -66,7 +63,6 @@
             <div class="button-container">
                 <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Adicionar Fotos</button>
                 <button class="upload-btn" onclick="uploadPhotos()">Enviar Fotos</button>
-                <button class="upload-btn" onclick="downloadAllPhotos()" style="background: #28a745;">Baixar Todas</button>
             </div>
             <div id="preview" class="gallery" style="margin-top: 20px;"></div>
         </div>
@@ -83,7 +79,7 @@
     
     <div id="photoModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
-        <button class="download-modal-btn" onclick="downloadCurrentPhoto()" title="Baixar foto">⬇</button>
+        <img src="download.jpg" class="download-modal-btn" onclick="downloadCurrentPhoto()" title="Baixar foto" alt="Download">
         <div class="modal-container">
             <div class="image-slider" id="imageSlider">
                 <img class="modal-content" id="modalImage">
