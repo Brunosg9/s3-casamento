@@ -336,20 +336,41 @@ function showImageForDownload(imageUrl, fileName) {
         border-radius: 10px;
     `;
     
-    // Criar instruções
+    // Criar instruções com imagem de exemplo
     const instructions = document.createElement('div');
     instructions.style.cssText = `
         color: white;
         text-align: center;
         margin-top: 20px;
-        font-size: 18px;
-        line-height: 1.5;
+        font-size: 16px;
+        line-height: 1.4;
+        max-width: 90%;
     `;
     instructions.innerHTML = `
-        <p><strong>Para salvar a foto:</strong></p>
-        <p>1. Pressione e segure a imagem acima</p>
-        <p>2. Selecione "Salvar na galeria" ou "Salvar imagem"</p>
-        <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">Toque fora da imagem para fechar</p>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin: 10px 0; backdrop-filter: blur(10px);">
+            <p style="font-size: 18px; margin-bottom: 15px; color: #4CAF50;"><strong>📸 Como salvar a foto:</strong></p>
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
+                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">1</div>
+                <p style="margin: 0; font-size: 16px;">Pressione e segure a imagem acima ☝️</p>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
+                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">2</div>
+                <p style="margin: 0; font-size: 16px;">Aparecerá um menu como este:</p>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="exemplo de download.jpg" style="max-width: 280px; width: 100%; border-radius: 12px; border: 3px solid #4CAF50; box-shadow: 0 6px 12px rgba(0,0,0,0.4); transition: transform 0.3s ease;" alt="Exemplo de download">
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin: 15px 0; text-align: left;">
+                <div style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">3</div>
+                <p style="margin: 0; font-size: 16px;">Toque em <strong style="color: #4CAF50;">"Salvar na galeria"</strong> ✅</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 14px; opacity: 0.7; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">💡 Toque fora da imagem para fechar</p>
     `;
     
     // Botão fechar
