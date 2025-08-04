@@ -381,21 +381,41 @@ function downloadPhoto(imageUrl, index) {
 
     if (isMobile) {
         if (isIOS) {
-            // iOS: criar link temporário e abrir
-            const link = document.createElement('a');
-            link.href = imageUrl;
-            link.target = '_blank';
-            link.rel = 'noopener';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // iOS: converter para data URL e abrir
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const dataUrl = reader.result;
+                        const newWindow = window.open();
+                        if (newWindow) {
+                            newWindow.document.write(`
+                                <html>
+                                    <head><title>Salvar Foto</title></head>
+                                    <body style="margin:0;padding:20px;text-align:center;background:#000;">
+                                        <img src="${dataUrl}" style="max-width:100%;height:auto;" alt="Foto Casamento">
+                                        <p style="color:white;margin-top:20px;font-family:Arial;">Pressione e segure a imagem para salvar</p>
+                                    </body>
+                                </html>
+                            `);
+                            showSuccessMessage('Foto aberta! Pressione e segure para salvar 📸');
+                        } else {
+                            showSuccessMessage('Permita pop-ups para baixar a foto');
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(() => {
+                    // Fallback: abrir URL diretamente
+                    window.open(imageUrl, '_blank');
+                    showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
+                });
         } else {
             // Android: window.open
             window.open(imageUrl, '_blank');
+            showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
         }
-        
-        // Mostrar mensagem de instrução
-        showSuccessMessage('Imagem aberta! Pressione e segure para salvar 📸');
     } else {
         // Desktop: download automático
         fetch(imageUrl)
