@@ -389,37 +389,23 @@ function downloadPhoto(imageUrl, index) {
 
     if (isMobile) {
         if (isIOS) {
-            // iOS: abrir imagem com instruções detalhadas
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        const newWindow = window.open();
-                        if (newWindow) {
-                            newWindow.document.write(`
-                                <html>
-                                    <head>
-                                        <title>Salvar Foto</title>
-                                        <meta name="viewport" content="width=device-width, initial-scale=1">
-                                    </head>
-                                    <body style="margin:0;padding:20px;text-align:center;background:#000;font-family:Arial;">
-                                        <div style="background:rgba(76,175,80,0.9);color:white;padding:15px;border-radius:10px;margin-bottom:20px;">
-                                            <p style="margin:0;font-size:16px;font-weight:bold;">⬇️ Pressione e segure a imagem abaixo</p>
-                                            <p style="margin:5px 0 0 0;font-size:14px;">Depois selecione "Salvar na galeria"</p>
-                                        </div>
-                                        <img src="${reader.result}" style="max-width:100%;height:auto;border-radius:10px;" alt="Foto Casamento">
-                                    </body>
-                                </html>
-                            `);
-                        }
-                    };
-                    reader.readAsDataURL(blob);
-                })
-                .catch(() => {
-                    window.open(imageUrl, '_blank');
-                });
-            showSuccessMessage('Instruções abertas! Siga os passos para salvar 📸', 5000);
+            // iOS Safari: criar link direto com download forçado
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            link.target = '_blank';
+            link.style.display = 'none';
+            
+            // Adicionar ao DOM e clicar
+            document.body.appendChild(link);
+            
+            // Forçar clique com delay
+            setTimeout(() => {
+                link.click();
+                document.body.removeChild(link);
+            }, 100);
+            
+            showSuccessMessage('Download iniciado! Verifique seus Downloads 📸', 5000);
         } else {
             // Android: window.open com instruções
             window.open(imageUrl, '_blank');
