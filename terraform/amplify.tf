@@ -56,8 +56,8 @@ resource "aws_s3_bucket_cors_configuration" "casamento_cors" {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST", "DELETE", "HEAD"]
     allowed_origins = [
-      "https://main.d3imqvfqiv0nsz.amplifyapp.com",
-      "https://d3imqvfqiv0nsz.amplifyapp.com"
+      "https://main.dv2yzn2txncju.amplifyapp.com",
+      "https://dv2yzn2txncju.amplifyapp.com"
     ]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
