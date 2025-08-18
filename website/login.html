@@ -66,32 +66,28 @@
             <img src="foto de capa.jpg" alt="Convite de Casamento" style="max-width: 200px; width: 100%; margin-bottom: 20px; border-radius: 10px;">
             <h2 class="login-title">Acesso à Galeria</h2>
             <form onsubmit="checkLogin(event)">
-                <input type="text" id="username" class="login-input" placeholder="Usuário" required>
-                <input type="password" id="password" class="login-input" placeholder="Senha" required>
+                <input type="text" id="accessCode" class="login-input" placeholder="Código de Acesso" required>
                 <button type="submit" class="login-btn">Entrar</button>
             </form>
-            <div id="errorMessage" class="error-message">Usuário ou senha incorretos. Tente novamente.</div>
+            <div id="errorMessage" class="error-message">Código de acesso incorreto. Tente novamente.</div>
         </div>
     </div>
 
     <script>
         function checkLogin(event) {
             event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const accessCode = document.getElementById('accessCode').value;
             
-            const correctUsername = 'casamentovanessaebruno';
-            const correctPassword = 'vanessaebruno1608';
+            const correctAccessCode = 'casamentovanessaebruno';
             
-            if (username === correctUsername && password === correctPassword) {
+            if (accessCode === correctAccessCode) {
                 // Salvar login no localStorage
                 localStorage.setItem('authenticated', 'true');
                 // Redirecionar para a galeria
                 window.location.href = 'gallery.html';
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
+                document.getElementById('accessCode').value = '';
             }
         }
 
